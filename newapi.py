@@ -37,6 +37,4 @@ api.add_resource(getJson, '/json')
 
 # example of another endpoint
 # api.add_resource(PredictRatings, '/ratings')
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', ssl_context='adhoc')
+app.run()
