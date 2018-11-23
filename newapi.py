@@ -23,7 +23,7 @@ def json():
 def solve():
     if request.method == "POST":
         token = request.form.get('g-recaptcha-response', '')
-        email_id = request.form.get('email-id', '')
+        email_id = request.form.get('email_id', '')
         token_email_id[email_id] = token
         print('Posted Token : ' + token)
         Thread(target = tokenremoval, args = [email_id]).start()
