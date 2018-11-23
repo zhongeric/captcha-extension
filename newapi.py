@@ -1,41 +1,40 @@
-from flask import Flask
-from flask_restful import reqparse, abort, Api, Resource
-import pickle
-import numpy as np
+from flask import Flask, render_template, request
+from threading import Thread
+from sys import argv
+import logging, time, sys
+
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
+
+token_email_id = {}
+tokens = {'tokens':[],'used':[]}
+
 app = Flask(__name__)
-api = Api(app)
-# create new model objec
 
-parser = reqparse.RequestParser()
-parser.add_argument('g-captcha-response')
-parser.add_argument('email-id')
-user_cap = {}
+def tokenremoval(email_id):
+    time.sleep(110)
+    token_email_id.pop(email_id)
 
-class solve(Resource):
-    def get(self):
-        # use parser and find the user's query
-        args = parser.parse_args()
-        g_cap_response = args['g-captcha-response']
-        email_id = args['email-id']
+@app.route('/json', methods=['GET'])
+def json():
+    content = token_email_id
+    return(render_template('json.html', content = content))
 
-        output = {'g_cap_response': g_cap_response, 'email-id': email_id}
-        print(output)
-        user_cap[email_id] = g_cap_response
+@app.route('/solve', methods=['POST'])
+def solve():
+    if request.method == "POST":
+        token = request.form.get('g-recaptcha-response', '')
+        email_id = request.form.get('email-id', '')
+        token_email_id[email_id] = token
+        print('Posted Token : ' + token)
+        Thread(target = tokenremoval, args = [email_id]).start()
+    return('Success')
 
-        return output
-
-api.add_resource(solve, '/solve')
-
-class getJson(Resource):
-    def get(self):
-        # use parser and find the user's quer
-
-        return user_cap
-
-api.add_resource(getJson, '/json')
-
-# example of another endpoint
-# api.add_resource(PredictRatings, '/ratings')
+# @app.route('/used', methods=['POST'])
+# def used():
+#     token = request.form.get('usedtoken', '')
+#     print('Used Token : ' + token)
+#     tokens['used'].append(token)
+#     return('Success')
 
 if __name__ == '__main__':
-    app.run(port=3500)
+    Thread(target = lambda: app.run(host = '0.0.0.0')).start()
