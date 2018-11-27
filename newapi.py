@@ -30,7 +30,7 @@ def solve():
     return('Success')
 
 @app.route('/', methods=['GET'])
-def json():
+def home():
     return(render_template('main.html'))
 
 # @app.route('/used', methods=['POST'])
