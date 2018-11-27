@@ -29,6 +29,10 @@ def solve():
         Thread(target = tokenremoval, args = [email_id]).start()
     return('Success')
 
+@app.route('/', methods=['GET'])
+def json():
+    return(render_template('main.html'))
+
 # @app.route('/used', methods=['POST'])
 # def used():
 #     token = request.form.get('usedtoken', '')
